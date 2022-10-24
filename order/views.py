@@ -1,4 +1,7 @@
+from asyncio.windows_events import NULL
+from cgitb import text
 from contextlib import redirect_stderr
+from urllib import response
 from urllib.robotparser import RequestRate
 from django.http import Http404
 from django.shortcuts import render
@@ -8,6 +11,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django import forms
 from django.contrib.auth.models import User
+import requests
 
 
 from .forms import orderForm, searchForm, UserCreateForm
@@ -74,6 +78,17 @@ def home2(request):
     gambar = Gambar.objects.all()
     gambar2 = Gambar2.objects.all()
     gambar3 = Gambar3.objects.all()
+
+    teks = request.POST.get('name')
+    respon = ''
+    if teks:
+        link = "https://lexica.art/api/v1/search?q=" + teks
+        respon = requests.get(link).json()
+
+    print(respon)
+    context = {'gambar':gambar, 'gambar2':gambar2, 'gambar3':gambar3,'respon': respon }
     
-    return render(request, 'index.html', {'gambar':gambar, 'gambar2':gambar2, 'gambar3':gambar3})
+    return render(request, 'index.html', {'gambar':gambar, 'gambar2':gambar2, 'gambar3':gambar3,'respon': respon })
+
+
     
